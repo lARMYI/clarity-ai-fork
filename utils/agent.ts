@@ -100,12 +100,14 @@ export class AIAgent {
       temperature: 0.0
     };
 
-    // GPT-5 uses max_completion_tokens, older models use max_tokens
+    // GPT-5 vs Legacy model parameters
     if (isGPT5) {
-      requestBody.max_completion_tokens = 4000;
-      requestBody.reasoning_effort = "low"; // Faster responses for agent iterations
+      // GPT-5 - NO max_completion_tokens, optional reasoning_effort and verbosity
+      // Use low reasoning for faster agent iterations
+      requestBody.reasoning_effort = "low";
       requestBody.verbosity = "medium";
     } else {
+      // Legacy models use max_tokens
       requestBody.max_tokens = 500;
     }
 

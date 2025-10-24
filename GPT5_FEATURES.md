@@ -48,15 +48,18 @@ When Agent Mode is enabled, the AI can:
 ### 3. Enhanced API Structure
 
 The application now uses OpenAI's latest GPT-5 API features:
-- **max_completion_tokens** instead of max_tokens (GPT-5 requirement)
-- **reasoning_effort** parameter for controlling thinking depth (minimal, low, medium, high)
-- **verbosity** parameter for controlling output length (low, medium, high)
+- **No max token limits** for GPT-5 models (unlimited output)
+- **reasoning_effort** parameter for controlling thinking depth (minimal, low, medium, high) - OPTIONAL
+- **verbosity** parameter for controlling output length (low, medium, high) - OPTIONAL
 - **Streaming responses** for real-time answers
 - **Tool calling** for enhanced capabilities
 - **Improved error handling** with detailed error messages
 - **Flexible model selection** via API
 
-**Important:** GPT-5 models will error if you use `max_tokens` - they require `max_completion_tokens` instead. Legacy models (GPT-3.5) still use `max_tokens`.
+**Important:**
+- GPT-5 models will error if you use `max_tokens`
+- GPT-5 does NOT need `max_completion_tokens` - omit it for unlimited output
+- Legacy models (GPT-3.5) still use `max_tokens` with a limit
 
 ## How to Use
 
@@ -122,9 +125,9 @@ The `/api/answer` endpoint now accepts:
 ```
 
 **Token Parameters:**
-- GPT-5 models use: `max_completion_tokens` (up to 128K)
-- Legacy models use: `max_tokens`
-- The API automatically selects the correct parameter based on the model
+- GPT-5 models: NO max token parameter (unlimited output)
+- Legacy models: `max_tokens: 500`
+- The API automatically handles the correct structure based on the model
 
 ### Tool Definitions
 

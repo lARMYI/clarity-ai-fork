@@ -25,16 +25,18 @@ export const OpenAIStream = async (
     stream: true
   };
 
-  // GPT-5 uses max_completion_tokens, older models use max_tokens
+  // GPT-5 vs Legacy model parameters
   if (isGPT5) {
-    // GPT-5 can output up to 128K tokens, but we'll use a reasonable default
-    requestBody.max_completion_tokens = 4000;
-
-    // GPT-5 specific parameters (use provided values or defaults)
-    requestBody.reasoning_effort = reasoningEffort || "low"; // Options: minimal, low, medium, high
-    requestBody.verbosity = verbosity || "medium"; // Options: low, medium, high
+    // GPT-5 specific parameters - NO max_completion_tokens needed (let it be unlimited)
+    // reasoning_effort and verbosity are optional, only add if provided
+    if (reasoningEffort) {
+      requestBody.reasoning_effort = reasoningEffort; // Options: minimal, low, medium, high
+    }
+    if (verbosity) {
+      requestBody.verbosity = verbosity; // Options: low, medium, high
+    }
   } else {
-    // Legacy models (GPT-3.5-turbo, GPT-4)
+    // Legacy models (GPT-3.5-turbo, GPT-4) - use max_tokens
     requestBody.max_tokens = 500;
   }
 
