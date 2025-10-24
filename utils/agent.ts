@@ -89,14 +89,25 @@ export class AIAgent {
   }
 
   private async callOpenAI(): Promise<any> {
-    const requestBody = {
+    // Check if this is a GPT-5 model
+    const isGPT5 = this.model.startsWith("gpt-5");
+
+    const requestBody: any = {
       model: this.model,
       messages: this.messages,
       tools: this.tools,
       tool_choice: "auto",
-      temperature: 0.0,
-      max_tokens: 500
+      temperature: 0.0
     };
+
+    // GPT-5 uses max_completion_tokens, older models use max_tokens
+    if (isGPT5) {
+      requestBody.max_completion_tokens = 4000;
+      requestBody.reasoning_effort = "low"; // Faster responses for agent iterations
+      requestBody.verbosity = "medium";
+    } else {
+      requestBody.max_tokens = 500;
+    }
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",

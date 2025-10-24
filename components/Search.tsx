@@ -18,6 +18,8 @@ export const Search: FC<SearchProps> = ({ onSearch, onAnswerUpdate, onDone }) =>
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedModel, setSelectedModel] = useState<OpenAIModel>(OpenAIModel.GPT_5_MINI);
   const [useAgentMode, setUseAgentMode] = useState<boolean>(true);
+  const [reasoningEffort, setReasoningEffort] = useState<"minimal" | "low" | "medium" | "high">("low");
+  const [verbosity, setVerbosity] = useState<"low" | "medium" | "high">("medium");
 
   const handleSearch = async () => {
     if (!query) {
@@ -65,7 +67,9 @@ export const Search: FC<SearchProps> = ({ onSearch, onAnswerUpdate, onDone }) =>
           prompt,
           apiKey,
           model: selectedModel,
-          useTools: useAgentMode
+          useTools: useAgentMode,
+          reasoningEffort,
+          verbosity
         })
       });
 
@@ -115,6 +119,8 @@ export const Search: FC<SearchProps> = ({ onSearch, onAnswerUpdate, onDone }) =>
     localStorage.setItem("CLARITY_KEY", apiKey);
     localStorage.setItem("CLARITY_MODEL", selectedModel);
     localStorage.setItem("CLARITY_AGENT_MODE", String(useAgentMode));
+    localStorage.setItem("CLARITY_REASONING_EFFORT", reasoningEffort);
+    localStorage.setItem("CLARITY_VERBOSITY", verbosity);
 
     setShowSettings(false);
     inputRef.current?.focus();
@@ -130,6 +136,8 @@ export const Search: FC<SearchProps> = ({ onSearch, onAnswerUpdate, onDone }) =>
     const CLARITY_KEY = localStorage.getItem("CLARITY_KEY");
     const CLARITY_MODEL = localStorage.getItem("CLARITY_MODEL");
     const CLARITY_AGENT_MODE = localStorage.getItem("CLARITY_AGENT_MODE");
+    const CLARITY_REASONING_EFFORT = localStorage.getItem("CLARITY_REASONING_EFFORT");
+    const CLARITY_VERBOSITY = localStorage.getItem("CLARITY_VERBOSITY");
 
     if (CLARITY_KEY) {
       setApiKey(CLARITY_KEY);
@@ -143,6 +151,14 @@ export const Search: FC<SearchProps> = ({ onSearch, onAnswerUpdate, onDone }) =>
 
     if (CLARITY_AGENT_MODE !== null) {
       setUseAgentMode(CLARITY_AGENT_MODE === "true");
+    }
+
+    if (CLARITY_REASONING_EFFORT) {
+      setReasoningEffort(CLARITY_REASONING_EFFORT as "minimal" | "low" | "medium" | "high");
+    }
+
+    if (CLARITY_VERBOSITY) {
+      setVerbosity(CLARITY_VERBOSITY as "low" | "medium" | "high");
     }
 
     inputRef.current?.focus();
@@ -259,8 +275,44 @@ export const Search: FC<SearchProps> = ({ onSearch, onAnswerUpdate, onDone }) =>
                   </label>
                 </div>
 
+                {selectedModel.startsWith("gpt-5") && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-[#D4D4D8] mb-2">
+                        Reasoning Effort (GPT-5 only)
+                      </label>
+                      <select
+                        className="block w-full rounded-md border border-gray-300 p-2 text-black shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm"
+                        value={reasoningEffort}
+                        onChange={(e) => setReasoningEffort(e.target.value as "minimal" | "low" | "medium" | "high")}
+                      >
+                        <option value="minimal">Minimal (Fastest)</option>
+                        <option value="low">Low (Quick)</option>
+                        <option value="medium">Medium (Balanced)</option>
+                        <option value="high">High (Most Thorough)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-[#D4D4D8] mb-2">
+                        Verbosity (GPT-5 only)
+                      </label>
+                      <select
+                        className="block w-full rounded-md border border-gray-300 p-2 text-black shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm"
+                        value={verbosity}
+                        onChange={(e) => setVerbosity(e.target.value as "low" | "medium" | "high")}
+                      >
+                        <option value="low">Low (Concise)</option>
+                        <option value="medium">Medium (Balanced)</option>
+                        <option value="high">High (Detailed)</option>
+                      </select>
+                    </div>
+                  </>
+                )}
+
                 <div className="text-xs text-[#A1A1AA]">
                   Agent mode enables the AI to use tools for better accuracy and up-to-date information.
+                  {selectedModel.startsWith("gpt-5") && " GPT-5 models support advanced reasoning and verbosity controls."}
                 </div>
               </div>
 

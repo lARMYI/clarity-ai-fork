@@ -8,11 +8,13 @@ export const config = {
 
 const handler = async (req: Request): Promise<Response> => {
   try {
-    const { prompt, apiKey, model, useTools } = (await req.json()) as {
+    const { prompt, apiKey, model, useTools, reasoningEffort, verbosity } = (await req.json()) as {
       prompt: string;
       apiKey: string;
       model?: OpenAIModel;
       useTools?: boolean;
+      reasoningEffort?: "minimal" | "low" | "medium" | "high";
+      verbosity?: "low" | "medium" | "high";
     };
 
     // Default to GPT-5-mini if no model specified
@@ -21,7 +23,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Enable tools if requested
     const tools = useTools ? searchTools : undefined;
 
-    const stream = await OpenAIStream(prompt, apiKey, selectedModel, tools);
+    const stream = await OpenAIStream(prompt, apiKey, selectedModel, tools, reasoningEffort, verbosity);
 
     return new Response(stream);
   } catch (error) {

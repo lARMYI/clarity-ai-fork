@@ -32,5 +32,11 @@ export type AgentConfig = {
   model: OpenAIModel;
   tools: ToolDefinition[];
   temperature?: number;
-  max_tokens?: number;
+  max_tokens?: number; // Legacy - used for GPT-3.5 and GPT-4
+  max_completion_tokens?: number; // GPT-5 models
+  reasoning_effort?: "minimal" | "low" | "medium" | "high"; // GPT-5 only
+  verbosity?: "low" | "medium" | "high"; // GPT-5 only
 };
+
+export type GPT5ReasoningEffort = "minimal" | "low" | "medium" | "high";
+export type GPT5Verbosity = "low" | "medium" | "high";

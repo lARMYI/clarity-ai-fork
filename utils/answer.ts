@@ -5,10 +5,15 @@ export const OpenAIStream = async (
   prompt: string,
   apiKey: string,
   model: OpenAIModel = OpenAIModel.GPT_5_MINI,
-  tools?: ToolDefinition[]
+  tools?: ToolDefinition[],
+  reasoningEffort?: "minimal" | "low" | "medium" | "high",
+  verbosity?: "low" | "medium" | "high"
 ) => {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
+
+  // Check if this is a GPT-5 model (uses max_completion_tokens)
+  const isGPT5 = model.startsWith("gpt-5");
 
   const requestBody: any = {
     model,
@@ -16,10 +21,22 @@ export const OpenAIStream = async (
       { role: "system", content: "You are a helpful assistant that accurately answers the user's queries based on the given text. When you have access to tools, use them to provide more accurate and up-to-date information." },
       { role: "user", content: prompt }
     ],
-    max_tokens: 500,
     temperature: 0.0,
     stream: true
   };
+
+  // GPT-5 uses max_completion_tokens, older models use max_tokens
+  if (isGPT5) {
+    // GPT-5 can output up to 128K tokens, but we'll use a reasonable default
+    requestBody.max_completion_tokens = 4000;
+
+    // GPT-5 specific parameters (use provided values or defaults)
+    requestBody.reasoning_effort = reasoningEffort || "low"; // Options: minimal, low, medium, high
+    requestBody.verbosity = verbosity || "medium"; // Options: low, medium, high
+  } else {
+    // Legacy models (GPT-3.5-turbo, GPT-4)
+    requestBody.max_tokens = 500;
+  }
 
   // Add tools if provided
   if (tools && tools.length > 0) {
