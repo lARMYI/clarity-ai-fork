@@ -6,6 +6,16 @@ If you have any questions, feel free to reach out to me on [Twitter](https://twi
 
 [![Clarity AI](./public/screenshot.png)](https://clarity-ai.vercel.app/)
 
+## ✨ NEW: GPT-5 Support & Agent Mode
+
+Clarity AI now supports OpenAI's latest GPT-5 models with advanced features:
+- **Multiple Models**: GPT-5, GPT-5 Mini, GPT-5 Nano, and GPT-3.5 Turbo
+- **Agent Mode**: Tool calling for enhanced accuracy and reasoning
+- **400K Context**: Massive context window for better understanding
+- **45% Fewer Errors**: Compared to GPT-4o
+
+See [GPT5_FEATURES.md](./GPT5_FEATURES.md) for detailed information.
+
 ## How It Works
 
 Given a query, Clarity fetches relevant, up-to-date information from the web and uses OpenAI's API to generate an answer.
